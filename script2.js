@@ -101,11 +101,11 @@ function addToCombatLog(message){
     document.getElementById('combatLog').appendChild(attackLog);
 }
 
-function iaWin(iaPokemon,userPokemon) {
+function iaWin() {
     userPokemon.currentHp = 0;
     addToCombatLog(userPokemon.name + ' no puede continuar, ' + iaPokemon.name + ' es el ganador!');
 }
-function userWin(iaPokemon,userPokemon) {
+function userWin() {
     iaPokemon.currentHp = 0;
     addToCombatLog(iaPokemon.name + ' no puede continuar, ' + userPokemon.name + ' es el ganador!');
 } 
@@ -120,21 +120,21 @@ function turn(userPokemonAttack){
     if(beginIa>beginUser){
         attackIa();
         if(userPokemon.currentHp <= 0){
-            iaWin(iaPokemon,userPokemon);
+            iaWin();
         }
         userPokemonAttack.dealDamage(userPokemon,iaPokemon);
         if(iaPokemon.currentHp <= 0){
-            userWin(iaPokemon,userPokemon);
+            userWin();
         }
     }
     if(beginIa<beginUser){
         userPokemonAttack.dealDamage(userPokemon,iaPokemon);
         if(iaPokemon.currentHp <= 0){
-            userWin(iaPokemon,userPokemon);
+            userWin();
         }
         attackIa();
         if(userPokemon.currentHp <= 0){
-            iaWin(iaPokemon,userPokemon);
+            iaWin();
         }
     }
 }
