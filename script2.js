@@ -63,7 +63,20 @@ const squirtle = new Pokemon('squirtle', water, 100, 100, [tackle, watergun]);
 const pikachu  = new Pokemon('pikachu', electric, 100, 100, [tackle, thunderpunch]);
 
 const iaPokemon = squirtle;
-const userPokemon = charmander;
+let userPokemon = charmander;
+
+const userPokemonBench = [charmander, pikachu];
+
+function choosePokemonUser() {
+    var selectPokemon = document.getElementById('selectUser').value;
+    var selectedPokemon = userPokemonBench.find((pokemon) => pokemon.name == selectPokemon)
+    userPokemon = selectedPokemon;
+    removeUserPokemonButtons();
+    generateUserPokemonButtons();
+    return userPokemon;
+}
+
+document.getElementById('iChooseYou').addEventListener('click', () => choosePokemonUser());
 
 document.addEventListener('DOMContentLoaded', function() {
     generateUserPokemonButtons();
@@ -77,6 +90,13 @@ function generateUserPokemonButtons() {
         document.getElementById('attacksPlaceholder').appendChild(button);
     });
 
+}
+
+function removeUserPokemonButtons() {
+    let attackButtons = document.getElementById('attacksPlaceholder');
+    while (attackButtons.hasChildNodes()) {
+        attackButtons.removeChild(attackButtons.firstChild);
+      }
 }
 
 function generateRandomInt(max) {
