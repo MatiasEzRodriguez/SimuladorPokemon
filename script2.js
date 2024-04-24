@@ -22,20 +22,20 @@ class Attack {
         this.power = _power;
     }
 
-    dealDamage(attackerPokemon,enemyPokemon){
-        if(attackerPokemon.currentHp>0 && enemyPokemon.currentHp>0){
+    dealDamage(attackerPokemon, enemyPokemon) {
+        if (attackerPokemon.currentHp > 0 && enemyPokemon.currentHp > 0) {
             // Calculate damage multiplier
             var effectiveness = 1;
             var result = enemyPokemon.type.weak.includes(this.type);
-            if(result == true){
-                effectiveness = effectiveness*2;
+            if (result == true) {
+                effectiveness = effectiveness * 2;
             }
             result = enemyPokemon.type.strong.includes(this.type);
-            if(result == true){
-                effectiveness = effectiveness*0.5;
+            if (result == true) {
+                effectiveness = effectiveness * 0.5;
             }
             // Calculate damage to enemy pokemon
-            var damage = Math.round(this.power*effectiveness);
+            var damage = Math.round(this.power * effectiveness);
             enemyPokemon.currentHp -= damage;
             // Add to combat log
             addToCombatLog(attackerPokemon.name + ' uso ' + this.name + ', ' + enemyPokemon.name + ' sufrio ' + damage + ' puntos de daño.');
@@ -45,9 +45,9 @@ class Attack {
 
 
 // Types
-const fire = new Type('fire',['water','ground'], ['grass','bug']);
-const water = new Type('water', ['electric','grass'], ['fire','ground']);
-const electric = new Type('electric', ['ground','grass'], ['water']);
+const fire = new Type('fire', ['water', 'ground'], ['grass', 'bug']);
+const water = new Type('water', ['electric', 'grass'], ['fire', 'ground']);
+const electric = new Type('electric', ['ground', 'grass'], ['water']);
 const normal = new Type('normal', ['fight'], null);
 
 // Attacks
@@ -60,27 +60,70 @@ const thunderpunch = new Attack('thunderpunch', 'electric', 15);
 // Pokemons
 const charmander = new Pokemon('charmander', fire, 100, 100, [scratch, ember, thunderpunch]);
 const squirtle = new Pokemon('squirtle', water, 100, 100, [tackle, watergun]);
-const pikachu  = new Pokemon('pikachu', electric, 100, 100, [tackle, thunderpunch]);
+const pikachu = new Pokemon('pikachu', electric, 100, 100, [tackle, thunderpunch]);
 
-const iaPokemon = squirtle;
+let iaPokemon = squirtle;
 let userPokemon = charmander;
 
-const userPokemonBench = [charmander, pikachu];
+const pokemonBench = [squirtle, charmander, pikachu];
 
-function choosePokemonUser() {
-    var selectPokemon = document.getElementById('selectUser').value;
-    var selectedPokemon = userPokemonBench.find((pokemon) => pokemon.name == selectPokemon)
-    userPokemon = selectedPokemon;
-    removeUserPokemonButtons();
-    generateUserPokemonButtons();
-    return userPokemon;
+function choosePokemonIa() {
+    var pokemonNameInMatch = document.getElementById('iaInMatch');
+    var pokemonTypeInMatch = document.getElementById('typeIa');
+    var selectPokemon = document.getElementById('selectIa').value;
+    var selectedPokemon = pokemonBench.find((pokemon) => pokemon.name == selectPokemon)
+    iaPokemon = selectedPokemon;
+    pokemonNameInMatch.innerHTML = iaPokemon.name;
+    pokemonTypeInMatch.innerHTML = iaPokemon.type.name;
 }
 
-document.getElementById('iChooseYou').addEventListener('click', () => choosePokemonUser());
-
-document.addEventListener('DOMContentLoaded', function() {
+function choosePokemonUser() {
+    var pokemonNameInMatch = document.getElementById('userInMatch');
+    var pokemonTypeInMatch = document.getElementById('typeUser');
+    var selectPokemon = document.getElementById('selectUser').value;
+    var selectedPokemon = pokemonBench.find((pokemon) => pokemon.name == selectPokemon)
+    userPokemon = selectedPokemon;
+    pokemonNameInMatch.innerHTML = userPokemon.name;
+    pokemonTypeInMatch.innerHTML = userPokemon.type.name;
+    removeUserPokemonButtons();
     generateUserPokemonButtons();
+}
+function hideSelect() {
+    document.getElementById('selectPokemons').style.display = 'none';
+    document.getElementById('matchStats').style.display = 'block';
+}
+
+function iChooseYouHandler (){
+    choosePokemonIa();
+    choosePokemonUser();
+    hideSelect();
+}
+
+document.getElementById('iChooseYou').addEventListener('click', () => iChooseYouHandler());
+
+document.addEventListener('DOMContentLoaded', function () {
+    generateIaBench();
+    generateUserBench();
 });
+
+function generateIaBench() {
+    pokemonBench.forEach((pokemon) => {
+        var pokemonOption = document.createElement('option');
+        pokemonOption.innerHTML = pokemon.name;
+        pokemonOption.value = pokemon.name;
+        document.getElementById('selectIa').appendChild(pokemonOption);
+    });
+}
+
+function generateUserBench() {
+    pokemonBench.forEach((pokemon) => {
+        var pokemonOption = document.createElement('option');
+        pokemonOption.innerHTML = pokemon.name;
+        pokemonOption.value = pokemon.name;
+        document.getElementById('selectUser').appendChild(pokemonOption);
+    });
+}
+
 
 function generateUserPokemonButtons() {
     userPokemon.attacks.forEach(attk => {
@@ -96,22 +139,22 @@ function removeUserPokemonButtons() {
     let attackButtons = document.getElementById('attacksPlaceholder');
     while (attackButtons.hasChildNodes()) {
         attackButtons.removeChild(attackButtons.firstChild);
-      }
+    }
 }
 
 function generateRandomInt(max) {
     return Math.floor(Math.random() * max);
-  }
+}
 
 function attackIa() {
-    if(iaPokemon.currentHp>0 && userPokemon.currentHp>0){
+    if (iaPokemon.currentHp > 0 && userPokemon.currentHp > 0) {
         var attackNumber = iaPokemon.attacks.length;
         var attackChosen = generateRandomInt(attackNumber);
-        iaPokemon.attacks[attackChosen].dealDamage(iaPokemon,userPokemon);
+        iaPokemon.attacks[attackChosen].dealDamage(iaPokemon, userPokemon);
     }
 }
 
-function addToCombatLog(message){
+function addToCombatLog(message) {
     var hpUser = document.getElementById('hpUser');
     hpUser.innerHTML = userPokemon.currentHp;
     var hpIa = document.getElementById('hpIa');
@@ -128,32 +171,32 @@ function iaWin() {
 function userWin() {
     iaPokemon.currentHp = 0;
     addToCombatLog(iaPokemon.name + ' no puede continuar, ' + userPokemon.name + ' es el ganador!');
-} 
+}
 
-function turn(userPokemonAttack){
+function turn(userPokemonAttack) {
     var beginIa = Math.random();
     var beginUser = Math.random();
-    while(beginIa == beginUser) {
+    while (beginIa == beginUser) {
         beginIa = Math.random();
     }
-    
-    if(beginIa>beginUser){
+
+    if (beginIa > beginUser) {
         attackIa();
-        if(userPokemon.currentHp <= 0){
+        if (userPokemon.currentHp <= 0) {
             iaWin();
         }
-        userPokemonAttack.dealDamage(userPokemon,iaPokemon);
-        if(iaPokemon.currentHp <= 0){
+        userPokemonAttack.dealDamage(userPokemon, iaPokemon);
+        if (iaPokemon.currentHp <= 0) {
             userWin();
         }
     }
-    if(beginIa<beginUser){
-        userPokemonAttack.dealDamage(userPokemon,iaPokemon);
-        if(iaPokemon.currentHp <= 0){
+    if (beginIa < beginUser) {
+        userPokemonAttack.dealDamage(userPokemon, iaPokemon);
+        if (iaPokemon.currentHp <= 0) {
             userWin();
         }
         attackIa();
-        if(userPokemon.currentHp <= 0){
+        if (userPokemon.currentHp <= 0) {
             iaWin();
         }
     }
